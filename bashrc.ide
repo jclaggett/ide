@@ -1,0 +1,174 @@
+#!/bin/bash
+
+# Wrap path functions under a single path command.
+ide() {
+  declare cmd=$1
+
+  case $cmd in
+    ''|help) cat <<-EOF
+		Integrated Development Environment for the command line. 
+		
+		commands:
+		
+         define     Define a variable and alias for the
+                    given directory.
+         init       Create a new ide project in the given
+                    directory.
+         help       Display this help.
+         module     Source one or more ide modules.
+         quit       Exit from the current ide project.
+         run        Launch the ide project in the given
+                    directory.
+         start      Start the ide project specified by IDE_HOME.
+                    called at the bottom of $HOME/.bashrc
+		EOF
+        ;;
+
+    define|init|module|quit|run|start) ide_$cmd "${@:2}" ;;
+    *) echo "Unknown ide command: $1" >&2; return 1 ;;
+  esac
+}
+
+# function to launch a new ide shell.
+ide_run()
+{
+    declare usage="Usage: ide run [DIR] [COMMAND] [ARGS]..."
+    declare dir="$1" cmd="${*:2}" path=
+
+    if [[ -z "$dir" ]] ; then
+        echo "ide: missing directory"
+        echo "$usage"
+        return 1
+    fi
+
+    if [[ ! -d "$dir" ]] ; then
+        echo "ide: invalid directory '$dir'"
+        echo "$usage"
+        return 1
+    fi
+
+    # Normalize the path.
+    dir="$(cd "$dir" && echo $PWD)"
+
+    declare -x \
+        IDE_HOME="$dir" \
+        IDE_DIR="$dir/.ide" \
+        IDE_NAME="${dir##*/}" \
+        IDE_CMD="$cmd"
+
+    # Launch the ide shell, running $cmd inside that shell.
+    if [[ -n "$cmd" ]] ; then
+        bash -ic "$cmd"
+    else
+        bash
+    fi
+}
+
+ide_init()
+{
+    declare usage="Usage: ide init DIR [module]..."
+    declare dir="$1" modules="${*:2}"
+
+    if [[ -z "$dir" ]] ; then
+        echo "ide: missing directory"
+        echo "$usage"
+        return 1
+    fi
+
+    if [[ -e "$dir/.ide" ]] ; then
+        echo "ide: $dir/.ide already exists."
+        echo "$usage"
+        return 1
+    fi
+
+    mkdir -p "$dir/.ide"
+
+    cat > "$dir/.ide/bashrc" <<-EOF
+		#!/bin/bash
+		
+		ide module ${modules:-# Source modules here}
+
+		if [[ -z "\$IDE_CMD" ]] ; then
+		    clear
+		    echo "Welcome to the \$IDE_NAME shell!"
+		    PS1="\[\033[01;31m\]\$IDE_NAME\[\033[00m\] \$PS1"
+		    tree -A "\$IDE_HOME"
+		fi
+		EOF
+
+    declare -x IDE_MODULE
+    for IDE_MODULE in $modules ; do
+        if [[ -f "$IDE_LIB/modules/$IDE_MODULE/init" ]] ; then
+            "$IDE_LIB/modules/$IDE_MODULE/init"
+        fi
+    done
+}
+
+ide_module() {
+    declare usage="Usage: ide module name [name]..."
+    declare module
+    for name in "$@" ; do
+        source "$IDE_LIB/modules/$name/bashrc"
+    done
+}
+
+ide_define() {
+    declare usage="Usage: ide define name directory"
+    declare name=$1 dir=$2
+
+    if [[ -z "$name" ]] ; then
+        echo "ide: missing name"
+        echo "$usage"
+        return 1
+    fi
+
+    if [[ -z "$dir" ]] ; then
+        echo "ide: missing directory"
+        echo "$usage"
+        return 1
+    fi
+
+    eval $name=\""$dir"\"
+    alias $name='ide run $'$name
+}
+
+ide_quit() {
+    declare usage="Usage: ide quit"
+    if [[ -n "$IDE_HOME" ]]; then
+        exit
+    else
+        echo "not an ide shell"
+    fi
+}
+
+ide_start() {
+    declare usage="Usage: ide start"
+
+    # Define quit as a convenience
+    alias quit="ide quit"
+
+    # Don't export IDE_CMD. For some reason, turning export off for IDE_CMD
+    # clears the variable!?
+    declare tmp="$IDE_CMD"
+    declare +x IDE_CMD
+    IDE_CMD="$tmp"
+
+    # Source the .ide file located in IDE_HOME if possible.
+    if [[ -n "$IDE_HOME" ]] ; then
+        if ! [[ -d "$IDE_HOME" ]] ; then
+            echo "ide: '$IDE_HOME' is not a directory."
+            exit 1
+        fi
+
+        cd "$IDE_HOME"
+
+        if ! [[ -d ".ide" ]] ; then
+            echo "ide: '$IDE_HOME/.ide' is missing."
+            exit 1
+        fi
+
+        if [[ -f ".ide/bashrc" ]] ; then
+            source ".ide/bashrc"
+        fi
+    fi
+}

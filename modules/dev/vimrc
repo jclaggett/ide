@@ -1,0 +1,8 @@
+set nocompatible
+map   ZZ :wqa<CR>
+
+augroup dev
+  autocmd!
+  autocmd VimLeave * mks! $IDE_DIR/Session.vim
+augroup END
+

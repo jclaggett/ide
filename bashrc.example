@@ -1,0 +1,21 @@
+# .bashrc
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+	. /etc/bashrc
+fi
+
+# User specific aliases and functions
+
+# IDE setup.
+export IDE_LIB="$HOME/dev/ide" # Location of ide installation.
+source "$IDE_LIB/bashrc.ide" # Source ide file.
+
+# define common ide projects.
+ide define sample "$HOME/sample"
+# defines:
+#   $sample=$HOME/sample
+#   alias sample="ide run $sample"
+
+# Keep this at the bottom to enable the current environment.
+ide start

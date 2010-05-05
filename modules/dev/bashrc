@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# IDE Development Module
+IDE_MODULE="$IDE_LIB/modules/dev"
+
+# General Variables.
+export HISTFILE="$IDE_DIR/bash_history"
+export cdh="$IDE_HOME"
+
+# Functions.
+function cdh
+{
+    cd "$cdh"
+}
+export -f cdh
+
+# Aliases
+{
+    local flags="-i $IDE_DIR/viminfo -S $IDE_DIR/Session.vim -S $IDE_MODULE/vimrc"
+    alias v="vim $flags"
+    alias gv="gvim $flags 2> /dev/null"
+}
+
+alias scr="screen -D -RR $IDE_NAME"
