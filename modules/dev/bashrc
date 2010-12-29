@@ -21,4 +21,4 @@ export -f cdh
     alias gv="gvim $flags 2> /dev/null"
 }
 
-alias scr="screen -D -RR $IDE_NAME"
+alias scr="screen -D -RR -S $IDE_NAME"

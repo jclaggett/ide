@@ -147,12 +147,6 @@ ide_start() {
     # Define quit as a convenience
     alias quit="ide quit"
 
-    # Don't export IDE_CMD. For some reason, turning export off for IDE_CMD
-    # clears the variable!?
-    declare tmp="$IDE_CMD"
-    declare +x IDE_CMD
-    IDE_CMD="$tmp"
-
     # Source the .ide file located in IDE_HOME if possible.
     if [[ -n "$IDE_HOME" ]] ; then
         if ! [[ -d "$IDE_HOME" ]] ; then
@@ -172,3 +166,6 @@ ide_start() {
         fi
     fi
 }
+
+# I have to do this outside a function...
+declare +x IDE_CMD
