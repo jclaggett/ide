@@ -5,8 +5,8 @@ The goal of this project is to provide an easy way to create and use multiple
 directories marked with a .ide subdirectory. See below for a brief explanation.
 
 ## Installation:
-    git clone \<url to this repository\>
-    cat ide/bashrc.example >> ~/.bashrc 
+    git clone https://github.com/jclaggett/ide
+    cat ide/bashrc.example >> ~/.bashrc
     edit ~/.bashrc and set IDE\_LIB to the git repo directory created above.
 
 ## Quick start:
