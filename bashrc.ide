@@ -2,31 +2,36 @@
 
 # Wrap path functions under a single path command.
 ide() {
-  declare cmd=$1
+  declare cmd="${FUNCNAME}_${1:-help}"
 
-  case $cmd in
-    ''|help) cat <<-EOF
-		Integrated Development Environment for the command line. 
-		
-		commands:
-		
-         define     Define a variable and alias for the
-                    given directory.
-         init       Create a new ide project in the given
-                    directory.
-         help       Display this help.
-         module     Source one or more ide modules.
-         quit       Exit from the current ide project.
-         run        Launch the ide project in the given
-                    directory.
-         start      Start the ide project specified by IDE_HOME.
-                    called at the bottom of $HOME/.bashrc
-		EOF
-        ;;
+  if ! type -t $cmd >/dev/null; then
+    echo "$FUNCNAME: $1 is not a known command. See '$FUNCNAME help'." >&2
+    return 1
+  fi
 
-    define|init|module|quit|run|start) ide_$cmd "${@:2}" ;;
-    *) echo "Unknown ide command: $1" >&2; return 1 ;;
-  esac
+  $cmd "${@:2}"
+}
+
+# help. 
+ide_help()
+{
+  cat <<EOF
+Integrated Development Environment for the command line. 
+
+commands:
+
+ define     Define a variable and alias for the
+            given directory.
+ init       Create a new ide project in the given
+            directory.
+ help       Display this help.
+ module     Source one or more ide modules.
+ quit       Exit from the current ide project.
+ run        Launch the ide project in the given
+            directory.
+ start      Start the ide project specified by IDE_HOME.
+            called at the bottom of $HOME/.bashrc
+EOF
 }
 
 # function to launch a new ide shell.
