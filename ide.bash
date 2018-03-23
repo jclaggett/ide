@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # Wrap path functions under a single path command.
-ide() {
+ide()
+{
   declare cmd="${FUNCNAME}_${1:-help}"
 
   if ! type -t $cmd >/dev/null; then
@@ -65,7 +66,7 @@ ide_run()
 
 ide_init()
 {
-    declare usage="Usage: ide init DIR [module]..."
+    declare usage="Usage: ide init DIR"
     declare dir="$1" modules="${*:2}"
 
     if [[ -z "$dir" ]] ; then
@@ -80,22 +81,13 @@ ide_init()
         return 1
     fi
 
-    mkdir -p "$dir/.ide"
-
-    cat > "$dir/.ide/bashrc" <<-EOF
-		#!/bin/bash
-		
-		if [[ -z "\$IDE_CMD" ]] ; then
-		    clear
-		    echo "Welcome to the \$IDE_HOME shell!"
-		    PS1="\[\033[01;31m\]\${IDE_HOME##*/}\[\033[00m\] \$PS1"
-		    tree -Ad -L 3 "\$IDE_HOME"
-		fi
-		EOF
+    mkdir -vp "$dir/.ide"
+    cp -vr "$IDE_LIB/default_ide" "$dir/.ide"
 }
 
 
-ide_quit() {
+quit()
+{
     declare usage="Usage: ide quit"
     if [[ -n "$IDE_HOME" ]]; then
         exit
@@ -105,11 +97,7 @@ ide_quit() {
 }
 
 
-# Define quit as a convenience
-alias quit="ide quit"
-
-
-# Supress IDE_CMD upon entering 'this' shell
+# Stop exporting IDE_CMD to subshells upon entering 'this' shell.
 declare +x IDE_CMD
 
 
@@ -121,5 +109,3 @@ if [[ -n "$IDE_HOME" ]] ; then
         source ".ide/bashrc"
     fi
 fi
-
-

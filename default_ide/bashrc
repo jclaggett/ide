@@ -1,24 +1,25 @@
 #!/bin/bash
 
-# IDE Development Module
-IDE_MODULE="$IDE_LIB/modules/dev"
-
 # General Variables.
 export HISTFILE="$IDE_DIR/bash_history"
-export cdh="$IDE_HOME"
 
 # Functions.
 function cdh
 {
-    cd "$cdh"
+    cd "$IDE_HOME"
 }
 export -f cdh
 
-# Aliases
+# Aliases.
 {
     local flags="-i $IDE_DIR/viminfo -S $IDE_DIR/Session.vim -S $IDE_MODULE/vimrc"
     alias v="vim $flags"
     alias gv="gvim $flags 2> /dev/null"
 }
 
-alias scr="screen -D -RR -S $IDE_NAME"
+if [[ -z "\$IDE_CMD" ]] ; then
+    clear
+    echo "Welcome to the \$IDE_HOME shell!"
+    PS1="\[\033[01;31m\]\${IDE_HOME##*/}\[\033[00m\] \$PS1"
+    tree -Ad -L 3 "\$IDE_HOME"
+fi

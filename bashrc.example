@@ -1,9 +1,0 @@
-# IDE setup.
-export IDE_LIB="$HOME/dev/ide" # Location of ide installation.
-source "$IDE_LIB/bashrc.ide" # Source ide file.
-
-# define common ide projects.
-ide define sample "$HOME/sample"
-
-# Keep this command at the bottom of the file.
-ide start
