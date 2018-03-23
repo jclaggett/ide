@@ -11,6 +11,9 @@ directories marked with a .ide subdirectory. See below for a brief explanation.
 ```bash
     git clone https://github.com/jclaggett/ide
     cat <<EOF >> ~/.bashrc
+    
+    export IDE_LIB="$PWD/ide"
+    source "$IDE_LIB/ide.bash"
     EOF
 ```
 
@@ -20,14 +23,13 @@ directories marked with a .ide subdirectory. See below for a brief explanation.
     ide help
 
     # Initializing a new IDE
-    ide init ~/foo
+    ide init foo
 
-    # Entering a subshell within the above IDE
-    ide run ~/foo
+    # Running an IDE shell within foo
+    ide run foo
 
-    # Leaving a subshell current IDE (three ways):
-    ide quit
-    quit  # aliased to ide quit
+    # Leaving the current IDE shell (two ways):
+    quit
     exit  # works but you can accidently exit your login shell
 
     # Running commands in the IDE without entering it:
