@@ -81,7 +81,7 @@ ide_init()
         return 1
     fi
 
-    mkdir -vp "$dir/.ide"
+    mkdir -vp "$dir"
     cp -vr "$IDE_LIB/default_ide" "$dir/.ide"
 }
 
