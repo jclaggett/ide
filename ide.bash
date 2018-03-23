@@ -105,10 +105,13 @@ ide_quit() {
 }
 
 
-declare +x IDE_CMD  # Supress IDE_CMD
-
 # Define quit as a convenience
 alias quit="ide quit"
+
+
+# Supress IDE_CMD upon entering 'this' shell
+declare +x IDE_CMD
+
 
 # Source the .ide file located in IDE_HOME if possible.
 if [[ -n "$IDE_HOME" ]] ; then
