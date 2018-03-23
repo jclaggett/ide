@@ -33,8 +33,9 @@ directories marked with a .ide subdirectory. See below for a brief explanation.
     exit  # works but you can accidently exit your login shell
 
     # Running commands in the IDE without entering it:
-    ide run ~/foo touch a b c
-    ide run ~/foo ls
-    ide run ~/foo echo \$PWD
-    ide run ~/foo history
+    alias foo='ide run foo'  # Just to be concise.
+    foo touch a b c
+    foo ls
+    foo echo \$PWD
+    foo history
 ```
